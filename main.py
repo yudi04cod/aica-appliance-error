@@ -13,12 +13,28 @@ LINE = (
     "filter, holding the water hostage."
 )
 
+OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/output")
+
+
+def validate(line: str) -> None:
+    """Check the entry line before writing it out.
+
+    The competition allows a single line of at most 200 characters.
+    A blank line, an over-long line, or an embedded newline would be
+    rejected, so fail loudly here instead of writing a bad entry.
+    """
+    assert line, "entry must not be empty"
+    assert line.strip(), "entry must not be only whitespace"
+    assert len(line) <= 200, f"entry is {len(line)} chars, over the 200-char limit"
+    assert "\n" not in line and "\r" not in line, "entry must be a single line"
+
 
 def main() -> None:
-    assert 1 <= len(LINE) <= 200, "entry must be 1-200 characters"
-    assert LINE.strip(), "entry must not be only whitespace"
-    os.makedirs("/output", exist_ok=True)
-    with open("/output/entry.txt", "w", encoding="utf-8", newline="\n") as f:
+    validate(LINE)
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    with open(
+        os.path.join(OUTPUT_DIR, "entry.txt"), "w", encoding="utf-8", newline="\n"
+    ) as f:
         f.write(LINE + "\n")
 
 
